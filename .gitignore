@@ -180,3 +180,16 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 .vs/
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Python cache and local backups
+__pycache__/
+*.py[cod]
+*.bak
+
+# Local virtual environments
+.venv/
+venv/

@@ -4,7 +4,7 @@ WORKDIR /app
 RUN addgroup --system app && adduser --system --ingroup app app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-COPY bot ./bot
+COPY . ./bot
 USER app
 EXPOSE 8081
 CMD ["python", "-m", "bot.main"]

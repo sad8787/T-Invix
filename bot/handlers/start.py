@@ -7,9 +7,9 @@ router = Router()
 
 def catalog_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text="Открыть каталог", web_app=WebAppInfo(url=settings.mini_app_url))
+        InlineKeyboardButton(text="РћС‚РєСЂС‹С‚СЊ РєР°С‚Р°Р»РѕРі", web_app=WebAppInfo(url=settings.mini_app_url))
     ]])
 
 @router.message(CommandStart())
 async def start(message: Message):
-    await message.answer("У меня есть товар", reply_markup=catalog_keyboard())
+    await message.answer("РЈ РјРµРЅСЏ РµСЃС‚СЊ С‚РѕРІР°СЂ", reply_markup=catalog_keyboard())

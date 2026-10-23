@@ -1,4 +1,5 @@
-from typing import Annotated\nimport secrets
+from typing import Annotated
+import secrets
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,7 +29,18 @@ async def create_product(
     name: Annotated[str, Form(min_length=1, max_length=200)],
     image: Annotated[UploadFile, File()],
     admin_id: Annotated[int, Form()],
+    x_internal_token: Annotated[str | None, Header()] = None,
 ):
+    # Require the shared internal token before accepting writes from the bot.
+    if (
+        not settings.internal_api_token
+        or not x_internal_token
+        or not secrets.compare_digest(
+            x_internal_token, settings.internal_api_token
+        )
+    ):
+        raise HTTPException(status_code=401, detail="Invalid internal token")
+
     # Bot is the only intended writer. Restrict this endpoint to configured Telegram admins.
     if not settings.admin_ids or admin_id not in settings.admin_ids:
         raise HTTPException(status_code=403, detail="Administrator is not authorized")

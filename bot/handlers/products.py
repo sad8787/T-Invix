@@ -12,9 +12,9 @@ log = logging.getLogger(__name__)
 @router.message(Command("create"))
 async def create_help(message: Message):
     if message.from_user is None or message.from_user.id not in settings.admin_ids:
-        await message.answer("Команда доступна только администратору.")
+        await message.answer("РљРѕРјР°РЅРґР° РґРѕСЃС‚СѓРїРЅР° С‚РѕР»СЊРєРѕ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ.")
         return
-    await message.answer("Отправьте одним сообщением фотографию и название товара в подписи (caption).")
+    await message.answer("РћС‚РїСЂР°РІСЊС‚Рµ РѕРґРЅРёРј СЃРѕРѕР±С‰РµРЅРёРµРј С„РѕС‚РѕРіСЂР°С„РёСЋ Рё РЅР°Р·РІР°РЅРёРµ С‚РѕРІР°СЂР° РІ РїРѕРґРїРёСЃРё (caption).")
 
 @router.message(lambda m: bool(m.photo) and bool(m.caption))
 async def create_product(message: Message, bot: Bot):
@@ -22,7 +22,7 @@ async def create_product(message: Message, bot: Bot):
         return
     name = " ".join((message.caption or "").split())
     if not name:
-        await message.answer("Добавьте название товара в подпись к фотографии.")
+        await message.answer("Р”РѕР±Р°РІСЊС‚Рµ РЅР°Р·РІР°РЅРёРµ С‚РѕРІР°СЂР° РІ РїРѕРґРїРёСЃСЊ Рє С„РѕС‚РѕРіСЂР°С„РёРё.")
         return
     photo = message.photo[-1]
     try:
@@ -33,22 +33,23 @@ async def create_product(message: Message, bot: Bot):
         async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
                 f"{settings.api_url.rstrip('/')}/api/v1/products",
-                data={"name": name, "admin_id": str(message.from_user.id)},\n                headers={"X-Internal-Token": settings.internal_api_token},
+                data={"name": name, "admin_id": str(message.from_user.id)},
+                headers={"X-Internal-Token": settings.internal_api_token},
                 files={"image": ("product.jpg", image_bytes, "image/jpeg")},
             )
         if response.status_code == 201:
             product = response.json()
-            await message.answer(f"Товар «{product['name']}» добавлен. ID: {product['id']}")
+            await message.answer(f"РўРѕРІР°СЂ В«{product['name']}В» РґРѕР±Р°РІР»РµРЅ. ID: {product['id']}")
         elif response.status_code == 403:
-            await message.answer("Администратор не разрешён на сервере. Проверьте ADMIN_TELEGRAM_IDS.")
+            await message.answer("РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ РЅРµ СЂР°Р·СЂРµС€С‘РЅ РЅР° СЃРµСЂРІРµСЂРµ. РџСЂРѕРІРµСЂСЊС‚Рµ ADMIN_TELEGRAM_IDS.")
         else:
             log.warning("Product API returned %s: %s", response.status_code, response.text[:500])
-            await message.answer(f"Не удалось создать товар (HTTP {response.status_code}).")
+            await message.answer(f"РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ С‚РѕРІР°СЂ (HTTP {response.status_code}).")
     except Exception:
         log.exception("Failed to create product")
-        await message.answer("Ошибка при сохранении товара. Попробуйте позже.")
+        await message.answer("РћС€РёР±РєР° РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё С‚РѕРІР°СЂР°. РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРѕР·Р¶Рµ.")
 
 @router.message(lambda m: bool(m.photo) and not bool(m.caption))
 async def photo_without_caption(message: Message):
     if message.from_user and message.from_user.id in settings.admin_ids:
-        await message.answer("У фотографии нет подписи. Отправьте фото и название товара в одном сообщении.")
+        await message.answer("РЈ С„РѕС‚РѕРіСЂР°С„РёРё РЅРµС‚ РїРѕРґРїРёСЃРё. РћС‚РїСЂР°РІСЊС‚Рµ С„РѕС‚Рѕ Рё РЅР°Р·РІР°РЅРёРµ С‚РѕРІР°СЂР° РІ РѕРґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё.")

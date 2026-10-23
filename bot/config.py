@@ -4,7 +4,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=False)
     bot_token: str
     mini_app_url: str = "https://example.com"
-    api_url: str = "http://backend:8000"\n    internal_api_token: str = "replace-this-internal-token"
+    api_url: str = "http://backend:8000"
+    internal_api_token: str = "replace-this-internal-token"
     admin_telegram_ids: str = ""
     bot_mode: str = "webhook"
     webhook_path: str = "/telegram/webhook"
